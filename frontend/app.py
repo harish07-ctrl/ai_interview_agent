@@ -8,7 +8,7 @@ import requests
 import uuid
 import json
 
-BACKEND_URL = "http://localhost:8000/api/interview"
+BACKEND_URL = "https://ai-interview-agent-qglf.onrender.com/api/interview"
 
 st.set_page_config(page_title="AI Interview Agent", page_icon="🎤", layout="centered")
 
