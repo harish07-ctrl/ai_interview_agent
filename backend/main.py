@@ -137,3 +137,33 @@ def save_completed_interview(session: Dict[str, Any], feedback: Dict[str, Any]):
 
     with open(log_file, "w") as f:
         json.dump(log, f, indent=2)
+
+@app.get("/api/interview-log")
+def get_interview_log():
+    try:
+        with open("interview_log.json", "r") as f:
+            return json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError):
+        return []
+
+
+@app.post("/api/interview-log/clear")
+def clear_interview_log():
+    with open("interview_log.json", "w") as f:
+        json.dump([], f)
+    return {"status": "cleared"}
+
+
+@app.post("/api/interview-log/delete")
+def delete_interview_log_entry(payload: dict):
+    index = payload.get("index")
+    try:
+        with open("interview_log.json", "r") as f:
+            log = json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError):
+        log = []
+    if index is not None and 0 <= index < len(log):
+        log.pop(index)
+    with open("interview_log.json", "w") as f:
+        json.dump(log, f, indent=2)
+    return {"status": "deleted"}

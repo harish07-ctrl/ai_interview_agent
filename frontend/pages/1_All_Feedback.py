@@ -1,23 +1,26 @@
 import streamlit as st
-import json
-import os
+import requests
+
+RENDER_BASE = "https://ai-interview-agent-qglf.onrender.com"
 
 st.set_page_config(page_title="Host View", page_icon="🔒")
 st.title("🔒 Host View — All Feedback")
 
-log_path = "../backend/interview_log.json"
-
 
 def load_log():
-    if not os.path.exists(log_path):
+    try:
+        response = requests.get(f"{RENDER_BASE}/api/interview-log", timeout=15)
+        return response.json()
+    except Exception:
         return []
-    with open(log_path) as f:
-        return json.load(f)
 
 
-def save_log(log):
-    with open(log_path, "w") as f:
-        json.dump(log, f, indent=2)
+def clear_log():
+    requests.post(f"{RENDER_BASE}/api/interview-log/clear", timeout=15)
+
+
+def delete_entry(index):
+    requests.post(f"{RENDER_BASE}/api/interview-log/delete", json={"index": index}, timeout=15)
 
 
 # ---- Password gate ----
@@ -42,7 +45,7 @@ if not log:
     st.info("No interviews completed yet.")
 else:
     if st.button("Delete ALL feedback", type="primary"):
-        save_log([])
+        clear_log()
         st.rerun()
 
     st.divider()
@@ -63,6 +66,5 @@ else:
                 st.write("-", n)
 
             if st.button("Delete this feedback", key=f"delete_{i}"):
-                log.pop(i)
-                save_log(log)
+                delete_entry(i)
                 st.rerun()
