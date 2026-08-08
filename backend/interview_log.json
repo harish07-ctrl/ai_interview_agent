@@ -1,0 +1,86 @@
+[
+  {
+    "candidate_name": "",
+    "candidate_id": "NEW-",
+    "timestamp": "2026-08-09T01:14:05.968000",
+    "questions_asked": 8,
+    "transcript": [
+      {
+        "role": "assistant",
+        "content": "Let's start with the basics. Can you walk me through the steps you took to set up a Python environment in VS Code on Day 1 of your training, and how you verified that everything was working correctly?"
+      },
+      {
+        "role": "user",
+        "content": "idk"
+      },
+      {
+        "role": "assistant",
+        "content": "Setting up a development environment can be a bit tricky. Let's break it down - do you remember installing the Python extension in VS Code, and if so, what steps you took to do that?"
+      },
+      {
+        "role": "user",
+        "content": "idk"
+      },
+      {
+        "role": "assistant",
+        "content": "Let's focus on the Local LLM & AI Coding Assistant Setup, which was covered on Day 2. Can you tell me what you understood about setting up a local LLM, and what tools or software you used to integrate it with your coding environment?"
+      },
+      {
+        "role": "user",
+        "content": "idk"
+      },
+      {
+        "role": "assistant",
+        "content": "Let's move on to your First AI Project, specifically the React Frontend part that you worked on during Day 3. Can you tell me what you learned about building a user interface with React, and how you structured your components for this project?"
+      },
+      {
+        "role": "user",
+        "content": "idk"
+      },
+      {
+        "role": "assistant",
+        "content": "Let's try to focus on something more specific. Since you had trouble with previous topics, I'll move on to Reading & Processing Structured Data, which was covered on Day 4. Can you tell me what you learned about reading and processing JSON data in this section?"
+      },
+      {
+        "role": "user",
+        "content": "idk"
+      },
+      {
+        "role": "assistant",
+        "content": "Let's move on to Reading & Processing Unstructured Data, which was covered on Day 5. Can you tell me what you learned about natural language processing and how you can use Python to extract information from unstructured text data?"
+      },
+      {
+        "role": "user",
+        "content": "idk"
+      },
+      {
+        "role": "assistant",
+        "content": "Let's shift gears to Building the Knowledge Base, which was covered on Day 6. Can you tell me what you understood about building a knowledge base and how you can use it to store and retrieve information, even if it was just a basic concept?"
+      },
+      {
+        "role": "user",
+        "content": "idk"
+      },
+      {
+        "role": "assistant",
+        "content": "Let's move on to Embeddings Explained, which was covered on Day 7. Can you tell me what you learned about embeddings, such as what they are, how they're used, and why they're important in natural language processing?"
+      },
+      {
+        "role": "user",
+        "content": "idk"
+      }
+    ],
+    "feedback": {
+      "summary": "The candidate struggled to answer basic questions about their training, showing a lack of understanding of key concepts. They were unable to recall or explain any of the topics covered in their training. The candidate's performance was severely impacted by their inability to provide meaningful responses.",
+      "strengths": [],
+      "gaps": [
+        "inability to recall training material",
+        "lack of understanding of key concepts"
+      ],
+      "next": [
+        "review and study training material to improve knowledge retention",
+        "practice explaining technical concepts to improve communication skills"
+      ]
+    }
+  }
+]
