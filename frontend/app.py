@@ -7,6 +7,8 @@ import streamlit as st
 import requests
 import uuid
 import json
+import os 
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 BACKEND_URL = "https://ai-interview-agent-qglf.onrender.com/api/interview"
 
@@ -309,7 +311,9 @@ st.markdown('<div class="hero-title">🎤 AI Interview Agent</div>', unsafe_allo
 st.markdown('<div class="hero-subtitle">Personalized technical interviews, built for the AI Cohort</div>', unsafe_allow_html=True)
 
 # ---- Load all candidates ----
-with open("data/candidates.json") as f:
+# ---- Load all candidates ----
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+with open(os.path.join(BASE_DIR, "data", "candidates.json")) as f:
     all_candidates = json.load(f)["candidates"]
 
 names = [f"{c['member']['name']} ({c['member']['id']})" for c in all_candidates]
