@@ -12,6 +12,16 @@ import os
 BACKEND_URL = "https://ai-interview-agent-qglf.onrender.com/api/interview"
 RENDER_BASE = "https://ai-interview-agent-qglf.onrender.com"
 
+def call_backend(payload, retries=2):
+    for attempt in range(retries):
+        try:
+            response = requests.post(BACKEND_URL, json=payload, timeout=60)
+            return response.json()
+        except (requests.exceptions.JSONDecodeError, requests.exceptions.RequestException):
+            if attempt == retries - 1:
+                return None
+    return None
+
 st.set_page_config(page_title="AI Interview Agent", page_icon="🎤", layout="centered")
 
 CUSTOM_CSS = """
@@ -399,12 +409,14 @@ if "current_candidate_id" not in st.session_state or st.session_state.current_ca
     st.session_state.done = False
     st.session_state.feedback = None
 
-    with st.spinner("Preparing your interview..."):
-        response = requests.post(BACKEND_URL, json={
+    with st.spinner("Preparing your interview... (may take a moment if the server is waking up)"):
+        data = call_backend({
             "sessionId": st.session_state.session_id,
             "candidate": selected_candidate,
         })
-    data = response.json()
+    if data is None:
+        st.error("Couldn't reach the server. Please refresh the page and try again.")
+        st.stop()
     st.session_state.messages.append({"role": "assistant", "content": data["reply"]})
     st.session_state.progress = data.get("progress", {"asked": 1, "min": 8})
 
@@ -425,11 +437,13 @@ if not st.session_state.done:
         st.session_state.messages.append({"role": "user", "content": user_input})
 
         with st.spinner("Thinking..."):
-            response = requests.post(BACKEND_URL, json={
+            data = call_backend({
                 "sessionId": st.session_state.session_id,
                 "message": user_input,
             })
-        data = response.json()
+        if data is None:
+            st.error("Couldn't reach the server. Please try sending your answer again.")
+            st.stop()
 
         st.session_state.messages.append({"role": "assistant", "content": data["reply"]})
 
@@ -497,11 +511,13 @@ if st.session_state.done and st.session_state.feedback:
         st.session_state.messages = []
         st.session_state.session_id = str(uuid.uuid4())
         with st.spinner("Preparing your interview..."):
-            response = requests.post(BACKEND_URL, json={
+            data = call_backend({
                 "sessionId": st.session_state.session_id,
                 "candidate": selected_candidate,
             })
-        data = response.json()
+        if data is None:
+            st.error("Couldn't reach the server. Please try again.")
+            st.stop()
         st.session_state.messages.append({"role": "assistant", "content": data["reply"]})
         st.session_state.progress = data.get("progress", {"asked": 1, "min": 8})
         st.rerun()
