@@ -111,11 +111,15 @@ def generate_feedback_llm(history: list) -> dict:
     prompt = f"""Based on this technical interview transcript, produce feedback as STRICT JSON only
 (no markdown, no explanation) with exactly these keys:
 {{
+  "score": <integer 0-100 reflecting overall technical performance>,
   "summary": "2-3 sentence overall assessment",
   "strengths": ["point 1", "point 2"],
   "gaps": ["point 1", "point 2"],
   "next": ["actionable recommendation 1", "actionable recommendation 2"]
 }}
+
+Score guidance: 80-100 = excellent understanding across topics, 60-79 = good with some
+gaps, below 60 = significant gaps needing further study.
 
 Transcript:
 {transcript}
@@ -131,10 +135,13 @@ Transcript:
         )
         raw = response.choices[0].message.content.strip()
         raw = raw.replace("```json", "").replace("```", "").strip()
-        return json.loads(raw)
+        parsed = json.loads(raw)
+        parsed["score"] = max(0, min(100, int(parsed.get("score", 0))))
+        return parsed
     except Exception as e:
         print(f"[ERROR] generate_feedback_llm failed: {e}")
         return {
+            "score": 0,
             "summary": "We were unable to generate detailed feedback due to a technical issue.",
             "strengths": [],
             "gaps": [],
