@@ -7,10 +7,10 @@ import streamlit as st
 import requests
 import uuid
 import json
-import os 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+import os
 
 BACKEND_URL = "https://ai-interview-agent-qglf.onrender.com/api/interview"
+RENDER_BASE = "https://ai-interview-agent-qglf.onrender.com"
 
 st.set_page_config(page_title="AI Interview Agent", page_icon="🎤", layout="centered")
 
@@ -71,7 +71,7 @@ CUSTOM_CSS = """
         margin-top: 0;
         margin-bottom: 2rem;
     }
-    .sidebar-section-label {
+    .section-label {
         text-transform: uppercase;
         font-size: 0.7rem;
         font-weight: 700;
@@ -80,7 +80,7 @@ CUSTOM_CSS = """
         margin: 20px 0 10px 0;
     }
     .profile-card {
-        background: linear-gradient(180deg, #1A1D29, #171A24);
+        background: linear-gradient(180deg, rgba(26,29,41,0.85), rgba(23,26,36,0.85));
         border: 1px solid #262838;
         border-radius: 14px;
         padding: 18px 20px;
@@ -171,20 +171,20 @@ CUSTOM_CSS = """
         box-shadow: 0 2px 10px rgba(0,0,0,0.15);
     }
     .feedback-summary {
-        background: rgba(99, 102, 241, 0.10);
-        border-color: rgba(99, 102, 241, 0.22);
+        background: rgba(99, 102, 241, 0.14);
+        border-color: rgba(99, 102, 241, 0.3);
     }
     .feedback-strengths {
-        background: rgba(34, 197, 94, 0.10);
-        border-color: rgba(34, 197, 94, 0.22);
+        background: rgba(34, 197, 94, 0.14);
+        border-color: rgba(34, 197, 94, 0.3);
     }
     .feedback-gaps {
-        background: rgba(245, 158, 11, 0.10);
-        border-color: rgba(245, 158, 11, 0.22);
+        background: rgba(245, 158, 11, 0.14);
+        border-color: rgba(245, 158, 11, 0.3);
     }
     .feedback-next {
-        background: rgba(59, 130, 246, 0.10);
-        border-color: rgba(59, 130, 246, 0.22);
+        background: rgba(59, 130, 246, 0.14);
+        border-color: rgba(59, 130, 246, 0.3);
     }
     .feedback-card-title {
         font-weight: 700;
@@ -255,7 +255,7 @@ CUSTOM_CSS = """
 """
 st.markdown(CUSTOM_CSS, unsafe_allow_html=True)
 
-# ---- Landing page (shown first, before entering the app) ----
+# ---- Landing page (shown first) ----
 if "app_started" not in st.session_state:
     st.session_state.app_started = False
 
@@ -311,73 +311,71 @@ st.markdown('<div class="hero-title">🎤 AI Interview Agent</div>', unsafe_allo
 st.markdown('<div class="hero-subtitle">Personalized technical interviews, built for the AI Cohort</div>', unsafe_allow_html=True)
 
 # ---- Load all candidates ----
-# ---- Load all candidates ----
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 with open(os.path.join(BASE_DIR, "data", "candidates.json")) as f:
     all_candidates = json.load(f)["candidates"]
 
 names = [f"{c['member']['name']} ({c['member']['id']})" for c in all_candidates]
 
-# ---- Sidebar: candidate selection ----
-with st.sidebar:
-    st.markdown('<div class="sidebar-section-label">Select Candidate</div>', unsafe_allow_html=True)
-    display_names = ["+ New Candidate"] + names
-    selected_name = st.selectbox("Choose who to interview:", display_names, label_visibility="collapsed")
+# ---- Candidate selection: now on the MAIN page, not the sidebar ----
+st.markdown('<div class="section-label">Select Candidate</div>', unsafe_allow_html=True)
+display_names = ["+ New Candidate"] + names
+selected_name = st.selectbox("Choose who to interview:", display_names, label_visibility="collapsed")
 
-    if "active_new_candidate" not in st.session_state:
-        st.session_state.active_new_candidate = None
+if "active_new_candidate" not in st.session_state:
+    st.session_state.active_new_candidate = None
 
-    if selected_name == "+ New Candidate":
-        if st.session_state.active_new_candidate is not None:
-            selected_candidate = st.session_state.active_new_candidate
-            st.caption(f"Currently interviewing: {selected_candidate['member']['name']}")
-            if st.button("End this and pick someone else"):
-                st.session_state.active_new_candidate = None
-                st.session_state.current_candidate_id = None
-                st.rerun()
-        else:
-            st.subheader("New Candidate Details")
-            new_name = st.text_input("Full name")
-            new_role = st.text_input("Job role")
-            new_experience = st.number_input("Years of experience", min_value=0, max_value=50, value=0)
-            start_clicked = st.button("Start Interview", type="primary")
-
-            if not start_clicked:
-                st.stop()
-
-            if not new_name.strip() or not new_role.strip():
-                st.error("Please enter both a name and a job role before starting.")
-                st.stop()
-
-            selected_candidate = {
-                "member": {
-                    "id": "NEW-" + new_name.replace(" ", "").upper(),
-                    "name": new_name,
-                    "jobRole": new_role,
-                    "yearsExperience": new_experience,
-                },
-                "missions": [],
-            }
-            st.session_state.active_new_candidate = selected_candidate
+if selected_name == "+ New Candidate":
+    if st.session_state.active_new_candidate is not None:
+        selected_candidate = st.session_state.active_new_candidate
+        st.caption(f"Currently interviewing: {selected_candidate['member']['name']}")
+        if st.button("End this and pick someone else"):
+            st.session_state.active_new_candidate = None
+            st.session_state.current_candidate_id = None
+            st.rerun()
     else:
-        st.session_state.active_new_candidate = None
-        selected_index = names.index(selected_name)
-        selected_candidate = all_candidates[selected_index]
+        st.subheader("New Candidate Details")
+        new_name = st.text_input("Full name")
+        new_role = st.text_input("Job role")
+        new_experience = st.number_input("Years of experience", min_value=0, max_value=50, value=0)
+        start_clicked = st.button("Start Interview", type="primary")
 
-    m = selected_candidate["member"]
-    st.markdown(
-        f"""
-        <div class="profile-card">
-            <div class="profile-name">{m['name']}</div>
-            <div class="profile-meta">{m.get('jobRole', 'N/A')} · {m.get('yearsExperience', '?')} yrs experience</div>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
+        if not start_clicked:
+            st.stop()
 
-    missions = selected_candidate.get("missions", [])
-    if missions:
-        st.markdown('<div class="sidebar-section-label">Learning History</div>', unsafe_allow_html=True)
+        if not new_name.strip() or not new_role.strip():
+            st.error("Please enter both a name and a job role before starting.")
+            st.stop()
+
+        selected_candidate = {
+            "member": {
+                "id": "NEW-" + new_name.replace(" ", "").upper(),
+                "name": new_name,
+                "jobRole": new_role,
+                "yearsExperience": new_experience,
+            },
+            "missions": [],
+        }
+        st.session_state.active_new_candidate = selected_candidate
+else:
+    st.session_state.active_new_candidate = None
+    selected_index = names.index(selected_name)
+    selected_candidate = all_candidates[selected_index]
+
+m = selected_candidate["member"]
+st.markdown(
+    f"""
+    <div class="profile-card">
+        <div class="profile-name">{m['name']}</div>
+        <div class="profile-meta">{m.get('jobRole', 'N/A')} · {m.get('yearsExperience', '?')} yrs experience</div>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
+
+missions = selected_candidate.get("missions", [])
+if missions:
+    with st.expander("View learning history"):
         for mission in missions:
             if mission.get("skipped"):
                 continue
@@ -390,6 +388,8 @@ with st.sidebar:
                 </div>""",
                 unsafe_allow_html=True,
             )
+
+st.divider()
 
 # ---- Reset the interview whenever a different candidate is picked ----
 if "current_candidate_id" not in st.session_state or st.session_state.current_candidate_id != selected_candidate["member"]["id"]:
