@@ -1,10 +1,17 @@
 import streamlit as st
 import requests
+import os
+import sys
 
-RENDER_BASE = "https://ai-interview-agent-qglf.onrender.com"
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from styles import get_custom_css
 
 st.set_page_config(page_title="Host View", page_icon="🔒")
-st.title("🔒 Host View — All Feedback")
+st.markdown(get_custom_css(), unsafe_allow_html=True)
+
+st.markdown('<div class="hero-title">🔒 Host View — All Feedback</div>', unsafe_allow_html=True)
+
+RENDER_BASE = "https://ai-interview-agent-qglf.onrender.com"
 
 
 def load_log():
